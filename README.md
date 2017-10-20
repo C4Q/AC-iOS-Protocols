@@ -1,5 +1,4 @@
-# AC-iOS Protocols and Extensions (feat. a bit of Delegation)
-![](https://media.giphy.com/media/3o7TKynapnSWtRUTfi/giphy.gif)
+# AC-iOS Protocols (feat. a bit of Delegation)
 
 ---
 ### Readings
@@ -16,8 +15,7 @@
 ### 1. Objectives
 
 1. Begin to understand the protocols and the delegate design pattern in programming
-2. Practice handling delegation somehow
-
+2. Handle delegation in preparation for tomorrow
 
 ---
 ### 2. But why Protocols?
@@ -44,7 +42,6 @@ In the below, check out some nuances with using protocols.
 
 ```swift
 // 1: As always, note the protocols below with the function and property stubs
-
 protocol Animal {
     var name: String { get }
     func pet()
@@ -155,7 +152,7 @@ editClass.editThis = "Hiya"
 var editStruct: EditableProperties = EditStruct()
 editStruct.editThis = "Okay"
 ```
-
+![](https://media.giphy.com/media/3o7TKynapnSWtRUTfi/giphy.gif)
 ---
 ### 3. Delegation - Wha-huh?
 
