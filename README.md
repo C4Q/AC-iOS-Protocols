@@ -9,7 +9,7 @@
 ### Vocabulary
 
 1. **Protocol**: ... A protocol is a list of prerequisites to inherit a title. A protocol is: you need this, this, and this. To be called this. ```You need to drink, party, and procrastinate to be called a stereotypical college student.``` [Medium](https://medium.com/ios-os-x-development/introduction-to-protocols-in-swift-3-73f9a9be6b15)
-2. **Delegate**: ... pattern in which one object in a program acts on behalf of, or in coordination with, another object. The delegating object keeps a reference to the other object—the delegate—and at the appropriate time sends a message to it. The message informs the delegate of an event that the delegating object is about to handle or has just handled. [Apple](https://developer.apple.com/library/content/documentation/General/Conceptual/DevPedia-CocoaCore/Delegation.html)=
+2. **Delegate**: ... pattern in which one object in a program acts on behalf of, or in coordination with, another object. The delegating object keeps a reference to the other object—the delegate—and at the appropriate time sends a message to it. The message informs the delegate of an event that the delegating object is about to handle or has just handled. [Apple](https://developer.apple.com/library/content/documentation/General/Conceptual/DevPedia-CocoaCore/Delegation.html)
 
 ---
 ### 1. Objectives
@@ -26,7 +26,7 @@ Because types can conform to more than one protocol, they can be decorated with 
 
 Protocols can be adopted by classes, structs and enums. Base classes and inheritance are restricted to class types.
 
-When you use a protocol, you only define the properties and methods you want the implementing types to have. If using properties, their read-write or read-only permissions have to be specified.
+When you use a protocol, you define **only** the properties and methods you want the implementing types to have, and not their values. If using properties, their read-write or read-only permissions have to be specified.
 
 ```swift
 protocol someProtocol {
