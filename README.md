@@ -10,8 +10,7 @@
 ### Vocabulary
 
 1. **Protocol**: ... A protocol is a list of prerequisites to inherit a title. A protocol is: you need this, this, and this. To be called this. ```You need to drink, party, and procrastinate to be called a stereotypical college student.``` [Medium](https://medium.com/ios-os-x-development/introduction-to-protocols-in-swift-3-73f9a9be6b15)
-2. **Delegate**: ... pattern in which one object in a program acts on behalf of, or in coordination with, another object. The delegating object keeps a reference to the other object—the delegate—and at the appropriate time sends a message to it. The message informs the delegate of an event that the delegating object is about to handle or has just handled. [Apple](https://developer.apple.com/library/content/documentation/General/Conceptual/DevPedia-CocoaCore/Delegation.html)
-3. **Extension**: ... Technique to add new functionality to an existing class, structure, enumeration, or protocol type. You can extend an existing type to adopt and conform to a new protocol, even if you don’t have access to the source code for the existing type.
+2. **Delegate**: ... pattern in which one object in a program acts on behalf of, or in coordination with, another object. The delegating object keeps a reference to the other object—the delegate—and at the appropriate time sends a message to it. The message informs the delegate of an event that the delegating object is about to handle or has just handled. [Apple](https://developer.apple.com/library/content/documentation/General/Conceptual/DevPedia-CocoaCore/Delegation.html)=
 
 ---
 ### 0. Objectives
@@ -131,18 +130,125 @@ boss.busyAtAMeeting()   // assistant prints "Answering calls"
 // 12pm. boss and assistant take lunch and bond 🤝
 ```
 
-### BUT WAIT, WHAT ABOUT EXTENSIONS
+---
+### But why Protocols?
 
-It's 4pm, and the slump is hitting big boss hard. So he assigns `Employee` a new task for them to `grabCoffee`.
+Because types can conform to more than one protocol, they can be decorated with default behaviors from multiple protocols. Unlike multiple inheritance of classes which some programming languages support, protocol extensions do not introduce any additional state.
+
+Protocols can be adopted by classes, structs and enums. Base classes and inheritance are restricted to class types.
+
+In the below, check out some extra nuances with protocols.
 
 ```swift
-// Drama ensues
-extension Employee {
-    func grabCoffee() {
-        print("This is beneath me. I quit")
+// 1: As always, note the protocols below with the function and property stubs
+
+protocol Animal {
+    var name: String { get }
+    func pet()
+}
+
+protocol Cat {
+    var badCat: Bool { get }
+    func purr()
+}
+
+protocol Dog {
+    var goodDoggie: Bool { get }
+}
+
+// 2: Welp, here are the animals that we want to create. Notice how this class conforms to both of the protocols we created.
+class Kitteh: Animal, Cat {
+    var name: String = "Meow Mix" // from Animal
+    var badCat: Bool = true // from Cat
+
+    func pet() { // Animal again
+        self.purr()
+    }
+
+    func purr() { // Cat again
+        badCat = !badCat
+        print("Purrrrr~~ ")
     }
 }
-```
 
----
-### Moving on
+// 3. Check it out, a struct!
+struct Doggo: Animal, Dog {
+    var name: String = "upDog" // from Animal
+    var goodDoggie: Bool = true // from Dog
+
+    func pet() { // from Animal
+        print("Ew. Slobber.")
+    }
+}
+
+var kitty = Kitteh()
+var doggy = Doggo()
+
+// 4: You can store them in arrays of their types! Dogs and cats living together, mass hysteria
+let petShop: [Animal] = [kitty, doggy] // class, struct
+
+petShop.map { $0.pet() }
+
+protocol ExampleProtocol {
+    // 5: This is a get-only property! But-- read on for drama
+    var simpleDescription: String { get }
+    // 6: Keep note of the mutating func.
+    mutating func adjust()
+}
+
+struct SimpleStruct: ExampleProtocol {
+    var simpleDescription: String = "This is a simple String!"
+
+    mutating func adjust() {
+        simpleDescription += "  Now 100% adjusted."
+        print(simpleDescription)
+    }
+}
+
+class SimpleClass: ExampleProtocol {
+    var simpleDescription: String = "This is a simple String!"
+
+    func adjust() { // 7. Does not have to be mutating since this is a Class
+        simpleDescription += " Now 100% adjusted."
+        print(simpleDescription)
+    }
+}
+
+var simpleClass = SimpleClass()
+var simpleStruct = SimpleStruct()
+simpleClass.adjust()
+simpleStruct.adjust()
+
+// 8. And here we change the description...
+simpleClass.simpleDescription = "We changed this"
+simpleStruct.simpleDescription = "We changed this too"
+
+// If the protocol only requires a property to be gettable, the requirement can be satisfied by any kind of property, and it’s valid for the property to be also settable if this is useful for your own code. In the above, the Class and Struct strings are by default read-write / gettable and settable .
+
+// 9. Protocols can enforce therse permissions if you cast it as a a protocol
+var protoClass = SimpleClass() as ExampleProtocol
+var protoStruct: ExampleProtocol = SimpleStruct()
+
+//protoClass.simpleDescription = "Hello" // NOPE
+//protoStruct.simpleDescription = "Hello" // NOT HERE NEITHER
+
+// 10. This protocol has a read-write String
+protocol EditableProperties {
+    var editThis: String { get set }
+}
+
+class EditClass: EditableProperties {
+    var editThis: String = "Hello"
+}
+
+class EditStruct: EditableProperties {
+    var editThis: String = "Hello"
+}
+
+// 11. YUP. STRINGS ARE CHANGED
+var editClass: EditableProperties = EditClass()
+editClass.editThis = "Hiya"
+
+var editStruct: EditableProperties = EditStruct()
+editStruct.editThis = "Okay"
+```
