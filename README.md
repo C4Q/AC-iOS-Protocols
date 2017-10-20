@@ -28,7 +28,7 @@ Because types can conform to more than one protocol, they can be decorated with 
 
 Protocols can be adopted by classes, structs and enums. Base classes and inheritance are restricted to class types.
 
-When you use a protocol, you only define the properties and methods you want the implementing types to have.
+When you use a protocol, you only define the properties and methods you want the implementing types to have. If using properties, their read-write or read-only permissions have to be specified.
 
 ```swift
 protocol someProtocol {
