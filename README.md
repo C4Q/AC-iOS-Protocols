@@ -13,131 +13,34 @@
 2. **Delegate**: ... pattern in which one object in a program acts on behalf of, or in coordination with, another object. The delegating object keeps a reference to the other object—the delegate—and at the appropriate time sends a message to it. The message informs the delegate of an event that the delegating object is about to handle or has just handled. [Apple](https://developer.apple.com/library/content/documentation/General/Conceptual/DevPedia-CocoaCore/Delegation.html)=
 
 ---
-### 0. Objectives
+### 1. Objectives
 
 1. Begin to understand the protocols and the delegate design pattern in programming
 2. Practice handling delegation somehow
 
----
-### 1. Delegation - Wha-huh?
-
-Imagine a job posting for a personal assistant by some employer:
-
-> **Help Wanted:**
->
-> **Seeking**: Personal Assistant
->
-> **Needed Skills**: Organizing Calendar, Taking Calls, Running Errands
-
-The employer looking for an assistant is likely busy with other things, so much so that they don't have time to *organize their calendar*, or *take all their calls*, or *run errands*. But, they're willing to delegate out some of their responsibilities to their assistant. The employer doesn't really have preference for how their assistant does these tasks - they're only concerned that the tasks get done. And once something gets done, they only want to be informed by their assistant.
-
-Think of a `protocol` as a job posting looking for certain skills:
-
-```swift
-
-// "job posting" PersonalAssistant
-protocol PersonalAssistant {
-  func organizeCalendar()
-  func takeCalls() -> Bool
-  func runErrands()
-}
-
-```
-
-The employer doesn't necessarily care who they're hiring, just that they can do the functions required. So, a human that could do those tasks would be as valuable to them as a robot, or cat, or dolphin.
-
-A class/struct/enum that is qualified to be a `PersonalAssistant` does their functions on behalf of their "employer." Their "employer" has delegated out some of their duties, and really is only concerned that they happened. When an object is "qualified" to be a `PersonalAssistant`, it is said that they "**conform**" to the `PersonalAssistant protocol`.
-
-#### The `Employer`
-
-To continue the analogy, let's create a class called `Employer`. This `Employer` will have a property called `delegate` of type `PersonalAssistant?`. Why optional? Well, the `Employer` doesn't necessarily have a `PersonalAssistant` right off the bat -- they may need to "hire" one. For that, we'll add a function called `hirePersonalAssistant`. Lastly, the `Employer` needs to be able to declare that they are busy at a meeting and can't take any calls.
-
-```swift
-  class Employer {
-    // 1. this is optional because we may have not yet "hired" an assistant
-    var delegate: PersonalAssistant?
-
-    // 2. We can hire a new assistant
-    func hirePersonalAssistant(_ assistant: PersonalAssistant) {
-      self.delegate = assistant
-    }
-
-    // 3. Employer is going to a meeting, so their calls need to be handled somehow
-    func busyAtAMeeting() {
-        if let delegate = self.delegate {
-           if delegate.takeCalls() {
-                print("Delegate is taking the call")
-            }
-        } else {
-            print("Calls going to voicemail")
-        }
-    }
-  }
-```
-
-#### The `Employee: PersonalAssistant`
-
-On the other side of things, we have an `Employee` class. The `Employee` is interested in applying to be a `PersonalAssistant`, which means that they can guarantee that they can fulfill the required tasks of `organizeCalendar()`, `takeCalls()`, and `runErrands`.
-
-```swift
-  // This Employee conforms to the PersonalAssistant protocol
-  class Employee: PersonalAssistant {
-
-    // 1. This employee has an additional ability outside of the requirements of the job description (being able to greeting people)
-    func greet() {
-        print("Hi there, I'm your Personal Assistant")
-    }
-
-    // 2. But because Employee conforms to the PersonalAssistant protocol/job description,
-    //    its required skills are to organizeCalendar, takeCalls, and runErrands
-    func organizeCalendar() {
-      print("Organizing your calendar")
-    }
-
-    func takeCalls() -> Bool {
-      print("Answering calls")
-      return true
-    }
-    func runErrands() {
-        print("Off running some errands")
-    }
-  }
-```
-
-#### First Day on the Job
-
-To see delegation in action, we could imagine `Employee`'s first day on the job looking like this:
-
-```swift
-
-// 8am, Employer gets into work. An Employee is coming in at 9am for an interview
-let boss = Employer()
-
-// 8:30am, boss has a meeting to go to
-boss.busyAtAMeeting() // prints "Calls going to voicemail"
-
-// 9am. Employee arrives for the interview to be a PersonalAssistant
-let assistant = Employee()
-assistant.greet() // prints "Hi there, I'm your Personal Assistant" ... boss thinks this is a little too soon, they haven't gotten the job yet... 🤦‍♂️
-
-// 10am. boss is so impressed by the new assistant! hires them right on the spot❗❗❗ 💰
-boss.hirePersonalAssistant(assistant)
-
-// 11am. boss heads into another meeting. but now has an assistant!
-boss.busyAtAMeeting()   // assistant prints "Answering calls"
-                        // boss prints "Delegate is taking the call"
-
-// 12pm. boss and assistant take lunch and bond 🤝
-```
 
 ---
-### But why Protocols?
+### 2. But why Protocols?
+
+A protocol defines a blueprint of methods, properties, and other requirements that suit a particular task or piece of functionality. The protocol can then be adopted by a class, structure, or enumeration to provide an actual implementation of those requirements. Any type that satisfies the requirements of a protocol is said to conform to that protocol.
 
 Because types can conform to more than one protocol, they can be decorated with default behaviors from multiple protocols. Unlike multiple inheritance of classes which some programming languages support, protocol extensions do not introduce any additional state.
 
 Protocols can be adopted by classes, structs and enums. Base classes and inheritance are restricted to class types.
 
-In the below, check out some extra nuances with protocols.
+When you use a protocol, you only define the properties and methods you want the implementing types to have.
+
+```swift
+protocol someProtocol {
+    var someString: String { get set }
+    var someInt: Int { get }
+
+    func someMethod()
+    func someMutatingMethod()
+}
+```
+
+In the below, check out some nuances with using protocols.
 
 ```swift
 // 1: As always, note the protocols below with the function and property stubs
@@ -251,4 +154,116 @@ editClass.editThis = "Hiya"
 
 var editStruct: EditableProperties = EditStruct()
 editStruct.editThis = "Okay"
+```
+
+---
+### 3. Delegation - Wha-huh?
+
+Imagine a job posting for a personal assistant by some employer:
+
+> **Help Wanted:**
+>
+> **Seeking**: Personal Assistant
+>
+> **Needed Skills**: Organizing Calendar, Taking Calls, Running Errands
+
+The employer looking for an assistant is likely busy with other things, so much so that they don't have time to *organize their calendar*, or *take all their calls*, or *run errands*. But, they're willing to delegate out some of their responsibilities to their assistant. The employer doesn't really have preference for how their assistant does these tasks - they're only concerned that the tasks get done. And once something gets done, they only want to be informed by their assistant.
+
+Think of a `protocol` as a job posting looking for certain skills:
+
+```swift
+
+// "job posting" PersonalAssistant
+protocol PersonalAssistant {
+  func organizeCalendar()
+  func takeCalls() -> Bool
+  func runErrands()
+}
+
+```
+
+The employer doesn't necessarily care who they're hiring, just that they can do the functions required. So, a human that could do those tasks would be as valuable to them as a robot, or cat, or dolphin.
+
+A class/struct/enum that is qualified to be a `PersonalAssistant` does their functions on behalf of their "employer." Their "employer" has delegated out some of their duties, and really is only concerned that they happened. When an object is "qualified" to be a `PersonalAssistant`, it is said that they "**conform**" to the `PersonalAssistant protocol`.
+
+#### The `Employer`
+
+To continue the analogy, let's create a class called `Employer`. This `Employer` will have a property called `delegate` of type `PersonalAssistant?`. Why optional? Well, the `Employer` doesn't necessarily have a `PersonalAssistant` right off the bat -- they may need to "hire" one. For that, we'll add a function called `hirePersonalAssistant`. Lastly, the `Employer` needs to be able to declare that they are busy at a meeting and can't take any calls.
+
+```swift
+  class Employer {
+    // 1. this is optional because we may have not yet "hired" an assistant
+    var delegate: PersonalAssistant?
+
+    // 2. We can hire a new assistant
+    func hirePersonalAssistant(_ assistant: PersonalAssistant) {
+      self.delegate = assistant
+    }
+
+    // 3. Employer is going to a meeting, so their calls need to be handled somehow
+    func busyAtAMeeting() {
+        if let delegate = self.delegate {
+           if delegate.takeCalls() {
+                print("Delegate is taking the call")
+            }
+        } else {
+            print("Calls going to voicemail")
+        }
+    }
+  }
+```
+
+#### The `Employee: PersonalAssistant`
+
+On the other side of things, we have an `Employee` class. The `Employee` is interested in applying to be a `PersonalAssistant`, which means that they can guarantee that they can fulfill the required tasks of `organizeCalendar()`, `takeCalls()`, and `runErrands`.
+
+```swift
+  // This Employee conforms to the PersonalAssistant protocol
+  class Employee: PersonalAssistant {
+
+    // 1. This employee has an additional ability outside of the requirements of the job description (being able to greeting people)
+    func greet() {
+        print("Hi there, I'm your Personal Assistant")
+    }
+
+    // 2. But because Employee conforms to the PersonalAssistant protocol/job description,
+    //    its required skills are to organizeCalendar, takeCalls, and runErrands
+    func organizeCalendar() {
+      print("Organizing your calendar")
+    }
+
+    func takeCalls() -> Bool {
+      print("Answering calls")
+      return true
+    }
+    func runErrands() {
+        print("Off running some errands")
+    }
+  }
+```
+
+#### First Day on the Job
+
+To see delegation in action, we could imagine `Employee`'s first day on the job looking like this:
+
+```swift
+
+// 8am, Employer gets into work. An Employee is coming in at 9am for an interview
+let boss = Employer()
+
+// 8:30am, boss has a meeting to go to
+boss.busyAtAMeeting() // prints "Calls going to voicemail"
+
+// 9am. Employee arrives for the interview to be a PersonalAssistant
+let assistant = Employee()
+assistant.greet() // prints "Hi there, I'm your Personal Assistant" ... boss thinks this is a little too soon, they haven't gotten the job yet... 🤦‍♂️
+
+// 10am. boss is so impressed by the new assistant! hires them right on the spot❗❗❗ 💰
+boss.hirePersonalAssistant(assistant)
+
+// 11am. boss heads into another meeting. but now has an assistant!
+boss.busyAtAMeeting()   // assistant prints "Answering calls"
+                        // boss prints "Delegate is taking the call"
+
+// 12pm. boss and assistant take lunch and bond 🤝
 ```
